@@ -1,34 +1,32 @@
-name: Build and Push (GHCR)
+name: Build & Push to GHCR
 
 on:
   push:
-    branches: [ "main", "master" ]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  packages: write
+    branches: ["main"]
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile          # <-- important: în rădăcină
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/dir-cleaner:latest
-            ghcr.io/${{ github.repository_owner }}/dir-cleaner:${{ github.sha }}
+    - name: Build image
+      run: |
+        docker build -t ghcr.io/${{ github.repository_owner }}/slskd_sldl_scheduler:latest .
+
+    - name: Push image
+      run: |
+        docker push ghcr.io/${{ github.repository_owner }}/slskd_sldl_scheduler:latest
