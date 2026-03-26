@@ -1,18 +1,13 @@
+version: "3.9"
 
-version: '3'
 services:
-  web:
-    build: .
+  slsk_scheduler:
+    image: ghcr.io/tommypopescu/slskd_sldl_scheduler:latest
+    pull_policy: always
+    user: "10001:100"
     ports:
       - "8080:8080"
     volumes:
       - ./data:/data
-  slskd:
-    image: slskd/slskd
-    ports:
-      - "5030:5030"
-    environment:
-      - SLSKD_REMOTE_CONFIGURATION=true
-      - SLSKD_DOWNLOADS_DIR=/downloads
-    volumes:
-      - ./downloads:/downloads
+      - /opt/slskd/downloads:/downloads    # folderul slskd de pe host
+    restart: unless-stopped
