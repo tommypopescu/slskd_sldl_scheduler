@@ -31,6 +31,10 @@ def index():
     if request.method == "POST":
         SCHEDULED_QUERY = request.form["query"].strip()
 
+        # ❗ VALIDARE QUERY GOL – AICI TREBUIE PUSĂ
+        if SCHEDULED_QUERY == "":
+            return "Error: Câmpul Căutare este obligatoriu", 400
+
         # FIX pentru interval gol
         interval_str = request.form.get("interval", "").strip()
         if interval_str == "":
