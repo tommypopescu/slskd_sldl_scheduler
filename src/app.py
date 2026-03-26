@@ -24,18 +24,29 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(1)
 
-@app.route('/',methods=['GET','POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    global SCHEDULED_QUERY,INTERVAL
-    if request.method=='POST':
-        q=request.form['query']
-        it=int(request.form['interval'])
-        SCHEDULED_QUERY=q
-        INTERVAL=it
-        with open('/data/list.txt','w') as f: f.write(q)
+    global SCHEDULED_QUERY, INTERVAL
+
+    if request.method == "POST":
+        SCHEDULED_QUERY = request.form["query"].strip()
+
+        # FIX pentru interval gol
+        interval_str = request.form.get("interval", "").strip()
+        if interval_str == "":
+            INTERVAL = 30
+        else:
+            INTERVAL = int(interval_str)
+
+        # salvăm query în listă
+        with open("/data/list.txt", "w") as f:
+            f.write(SCHEDULED_QUERY)
+
+        # resetăm schedulerul
         schedule.clear()
         schedule.every(INTERVAL).minutes.do(task)
-    return render_template_string(TEMPLATE,q=SCHEDULED_QUERY,i=INTERVAL)
+
+    return render_template_string(TEMPLATE, q=SCHEDULED_QUERY, i=INTERVAL)
 
 threading.Thread(target=run_scheduler,daemon=True).start()
 
