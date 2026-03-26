@@ -1,13 +1,13 @@
-version: "3.9"
 
 services:
-  slsk_scheduler:
-    image: ghcr.io/tommypopescu/slskd_sldl_scheduler:latest
-    pull_policy: always
-    user: "10001:100"
+  scheduler:
+    build: .
     ports:
       - "8080:8080"
     volumes:
       - ./data:/data
-      - /opt/slskd/downloads:/downloads    # folderul slskd de pe host
+      - /opt/slskd/downloads:/downloads
+    environment:
+      - SLSKD_BASE=http://192.168.1.7:5030
+      - SLSKD_API_KEY=OXMRJ43VWQU71F9L68TZYHNP
     restart: unless-stopped
